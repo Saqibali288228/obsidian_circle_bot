@@ -3,4 +3,5 @@ dist/
 .env
 *.db
 *.log
+rclone.conf
 .DS_Store
