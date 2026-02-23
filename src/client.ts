@@ -41,11 +41,15 @@ export class ObsidianClient extends Client {
         const eventFiles = fs.readdirSync(eventsPath).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
 
         for (const file of eventFiles) {
-            const event = require(`./events/${file}`).default;
-            if (event.once) {
-                this.once(event.name, (...args) => event.execute(...args, this));
-            } else {
-                this.on(event.name, (...args) => event.execute(...args, this));
+            try {
+                const event = (await import(`./events/${file}`)).default;
+                if (event.once) {
+                    this.once(event.name, (...args) => event.execute(...args, this));
+                } else {
+                    this.on(event.name, (...args) => event.execute(...args, this));
+                }
+            } catch (error) {
+                console.error(`Failed to load event ${file}:`, error);
             }
         }
     }
@@ -56,8 +60,12 @@ export class ObsidianClient extends Client {
         const commandFiles = fs.readdirSync(commandsPath).filter(file => file.endsWith('.ts') || file.endsWith('.js'));
 
         for (const file of commandFiles) {
-            const command = require(`./commands/${file}`).default;
-            this.commands.set(command.data.name, command);
+            try {
+                const command = (await import(`./commands/${file}`)).default;
+                this.commands.set(command.data.name, command);
+            } catch (error) {
+                console.error(`Failed to load command ${file}:`, error);
+            }
         }
     }
 
