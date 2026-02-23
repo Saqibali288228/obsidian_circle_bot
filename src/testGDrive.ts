@@ -1,8 +1,8 @@
-const { GDriveSync } = require('./utils/gdriveSync');
-const { Logger } = require('./utils/logger');
-const fs = require('fs');
-const path = require('path');
-const { config } = require('./config/config');
+import { GDriveSync } from './utils/gdriveSync';
+import { Logger } from './utils/logger';
+import * as fs from 'fs';
+import * as path from 'path';
+import { config } from './config/config';
 
 async function test() {
     const dbPath = path.resolve(process.cwd(), config.database.path);
