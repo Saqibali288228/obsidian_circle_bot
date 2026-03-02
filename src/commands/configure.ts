@@ -56,27 +56,34 @@ export default {
 
         if (group === 'embed' && sub === 'set') {
             const feature = interaction.options.getString('feature')!;
-            const title = interaction.options.getString('title') || undefined;
-            const description = interaction.options.getString('description') || undefined;
+            const title = interaction.options.getString('title');
+            const description = interaction.options.getString('description');
             const colorStr = interaction.options.getString('color');
-            const footer = interaction.options.getString('footer') || undefined;
-            const thumbnail = interaction.options.getString('thumbnail') || undefined;
-            const image = interaction.options.getString('image') || undefined;
+            const footer = interaction.options.getString('footer');
+            const thumbnail = interaction.options.getString('thumbnail');
+            const image = interaction.options.getString('image');
 
-            let color: number | undefined;
-            if (colorStr) {
-                color = parseInt(colorStr.replace('#', ''), 16);
-            }
+            const data: any = {};
+            if (title) data.title = title;
+            if (description) data.description = description;
+            if (colorStr) data.color = parseInt(colorStr.replace('#', ''), 16);
+            if (footer) data.footer = footer;
+            if (thumbnail) data.thumbnail = thumbnail;
+            if (image) data.image = image;
 
-            await customization.set(feature, { title, description, color, footer, thumbnail, image });
+            await customization.set(feature, data);
             await interaction.reply({ content: `Successfully updated embed configuration for **${feature}**.`, ephemeral: true });
 
         } else if (group === 'message' && sub === 'set') {
             const feature = interaction.options.getString('feature')!;
-            const success = interaction.options.getString('success') || undefined;
-            const error = interaction.options.getString('error') || undefined;
+            const success = interaction.options.getString('success');
+            const error = interaction.options.getString('error');
 
-            await customization.set(feature, { success_msg: success, error_msg: error });
+            const data: any = {};
+            if (success) data.success_msg = success;
+            if (error) data.error_msg = error;
+
+            await customization.set(feature, data);
             await interaction.reply({ content: `Successfully updated message configuration for **${feature}**.`, ephemeral: true });
 
         } else if (group === 'xp' && sub === 'range') {

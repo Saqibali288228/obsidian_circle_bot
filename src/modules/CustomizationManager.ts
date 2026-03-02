@@ -26,7 +26,8 @@ export class CustomizationManager {
 
     public async get(feature: string): Promise<CustomizationData | null> {
         const db = await this.getDb();
-        return await db.get('SELECT * FROM customization WHERE feature = ?', feature);
+        const result = await db.get('SELECT * FROM customization WHERE feature = ?', feature);
+        return result || null;
     }
 
     public async set(feature: string, data: Partial<CustomizationData>) {

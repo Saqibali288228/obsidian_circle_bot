@@ -95,7 +95,7 @@ export class GiveawayManager {
         const winners: string[] = [];
         if (participants.length > 0) {
             const shuffled = participants.sort(() => 0.5 - Math.random());
-            winners.push(...shuffled.slice(0, giveaway.winners_count).map(p => `<@${p.user_id}>`));
+            winners.push(...shuffled.slice(0, giveaway.winners_count).map((p: any) => `<@${p.user_id}>`));
         }
 
         await this.client.db.run('UPDATE giveaways SET status = ? WHERE message_id = ?', 'ended', messageId);

@@ -94,7 +94,44 @@ export class DatabaseManager {
                 target_value TEXT,
                 metadata TEXT
             );
+
+            -- Ticket Panels
+            CREATE TABLE IF NOT EXISTS ticket_panels (
+                message_id TEXT PRIMARY KEY,
+                channel_id TEXT NOT NULL,
+                guild_id TEXT NOT NULL,
+                title TEXT,
+                description TEXT,
+                color INTEGER,
+                footer TEXT,
+                thumbnail TEXT,
+                image TEXT
+            );
+
+            -- Ticket Button Bindings
+            CREATE TABLE IF NOT EXISTS ticket_bindings (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                message_id TEXT NOT NULL,
+                custom_id TEXT NOT NULL,
+                label TEXT NOT NULL,
+                emoji TEXT,
+                style TEXT DEFAULT 'Primary',
+                ticket_type TEXT NOT NULL,
+                channel_format TEXT NOT NULL,
+                category_id TEXT NOT NULL,
+                staff_role_id TEXT NOT NULL,
+                UNIQUE(message_id, custom_id)
+            );
         `);
+
+        // Update tickets table to include missing columns if they don't exist
+        const ticketColumns = await this.instance.all("PRAGMA table_info(tickets)");
+        if (!ticketColumns.some(c => c.name === 'ticket_type')) {
+            await this.instance.exec("ALTER TABLE tickets ADD COLUMN ticket_type TEXT");
+        }
+        if (!ticketColumns.some(c => c.name === 'guild_id')) {
+            await this.instance.exec("ALTER TABLE tickets ADD COLUMN guild_id TEXT");
+        }
 
         // Initialize ticket counter if not exists
         await this.instance.run('INSERT OR IGNORE INTO counters (key, value) VALUES (?, ?)', 'ticket_number', 0);

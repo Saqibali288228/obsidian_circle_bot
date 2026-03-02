@@ -23,12 +23,19 @@ export default {
         } else if (interaction.isButton()) {
             // All button interactions should be handled here or deferred if complex
             try {
-                if (interaction.customId.startsWith('ticket_create:')) {
-                    const { TicketManager } = require('../modules/tickets/TicketManager');
-                    await new TicketManager(client).createTicket(interaction, interaction.customId.split(':')[1]);
+                if (interaction.customId.startsWith('ticket_btn:')) {
+                    const buttonId = interaction.customId.split(':')[1];
+                    const binding = await client.db.get('SELECT * FROM ticket_bindings WHERE message_id = ? AND custom_id = ?', interaction.message.id, buttonId);
+                    if (binding) {
+                        const { TicketManager } = require('../modules/tickets/TicketManager');
+                        await new TicketManager(client).createTicket(interaction, binding);
+                    }
                 } else if (interaction.customId === 'ticket_close') {
                     const { TicketManager } = require('../modules/tickets/TicketManager');
-                    await new TicketManager(client).closeTicket(interaction, interaction.channelId);
+                    await new TicketManager(client).closeTicket(interaction);
+                } else if (interaction.customId === 'ticket_add_user') {
+                    // We'll use a modal or a simple message for adding users if triggered by button
+                    await interaction.reply({ content: 'Use `/ticket add @user` to add someone to this ticket.', ephemeral: true });
                 } else if (interaction.customId === 'ticket_claim') {
                     const { TicketManager } = require('../modules/tickets/TicketManager');
                     await new TicketManager(client).claimTicket(interaction);

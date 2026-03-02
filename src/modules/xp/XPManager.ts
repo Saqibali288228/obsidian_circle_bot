@@ -40,7 +40,9 @@ export class XPManager {
                 .setColor(config.colors.success)
                 .setTimestamp();
 
-            await message.channel.send({ embeds: [embed] });
+            if (message.channel.isTextBased()) {
+                await (message.channel as TextChannel).send({ embeds: [embed] });
+            }
         }
     }
 
